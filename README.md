@@ -20,3 +20,51 @@ python create_files.py
 ```
 python task01.py src_dir/ -d dst_dir
 ```
+
+#### source dir example
+
+```
+tree src_dir/ | head -n15
+src_dir/
+├── employee
+│   ├── cost
+│   │   ├── actually
+│   │   │   ├── focus.wav
+│   │   │   ├── others.js
+│   │   │   ├── part.ods
+│   │   │   ├── skin.pages
+│   │   │   └── where.wav
+│   │   ├── address.key
+│   │   ├── business.mp4
+│   │   ├── doctor.ods
+│   │   ├── dog.key
+│   │   ├── him
+│   │   │   ├── city.wav
+
+```
+
+#### destination dir example
+
+```
+dst_dir/
+├── avi
+│   ├── employee
+│   │   ├── cost
+│   │   │   └── him
+│   │   │       └── friend.avi
+│   │   └── which.avi
+│   ├── office
+│   │   ├── everything
+│   │   │   └── many.avi
+│   │   ├── past
+│   │   │   └── with
+│   │   │       └── if.avi
+│   │   └── reach
+│   │       └── certain
+│   │           └── plant.avi
+│   └── push
+│       ├── information
+│       │   └── do.avi
+│       ├── stand
+
+```
