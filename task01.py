@@ -1,47 +1,48 @@
 # original from https://github.com/dvankevich/goit-algo-hw-03/blob/main/task01.py
 import sys
 import argparse
-from pathlib import Path
-import shutil
+from aiopath import Path
+import aioshutil
+import asyncio
 import errno
 
 
-def check_paths(src_path, dst_path):
-    if src_path.absolute() == dst_path.absolute():
+async def check_paths(src_path, dst_path):
+    if await src_path.absolute() == await dst_path.absolute():
         raise ValueError(f"{src_path} and {dst_path} are the same directory")
 
-    if dst_path.absolute().is_relative_to(src_path.absolute()):
+    if dst_path.is_relative_to(src_path):  # synchronous method
         raise ValueError(f"{dst_path} cannot be inside {src_path.absolute()}")
 
 
-def validate_source(src_path):
-    if not src_path.exists():
+async def validate_source(src_path):
+    if not await src_path.exists():
         raise FileNotFoundError(errno.ENOENT, f"{src_path} does not exist")
 
-    if not src_path.is_dir():
+    if not await src_path.is_dir():
         raise NotADirectoryError(errno.ENOTDIR, f"{src_path} is not a directory")
 
 
-def validate_destination(dst_path):
-    if dst_path.exists() and not dst_path.is_dir():
+async def validate_destination(dst_path):
+    if await dst_path.exists() and not await dst_path.is_dir():
         raise NotADirectoryError(errno.ENOTDIR, f"{dst_path} is not a directory")
 
-    if dst_path.exists() and any(dst_path.iterdir()):
+    if await dst_path.exists() and any(await dst_path.iterdir()):
         raise OSError(errno.ENOTEMPTY, f"{dst_path} is not empty")
 
 
-def copy_file(src: Path, dst: Path, verbose):
+async def copy_file(src: Path, dst: Path, verbose):
     file_name = src.name
     file_ext = src.suffix[1:]
     dir_name = src.parent
     # create destination path
     dst_dir = dst / file_ext / Path(*dir_name.parts[1:])  # remove source dirname
-    # create destination dir if is not exist
-    if dst_dir.exists():
-        if dst_dir.is_file():
+    # create destination dir if it does not exist
+    if await dst_dir.exists():
+        if await dst_dir.is_file():
             raise ValueError(f"Error: '{dst_dir}' is a file, not a directory.")
     else:
-        dst_dir.mkdir(parents=True, exist_ok=True)
+        await dst_dir.mkdir(parents=True, exist_ok=True)
         if verbose:
             print("create directory", dst_dir, dst_dir.absolute())
 
@@ -50,18 +51,18 @@ def copy_file(src: Path, dst: Path, verbose):
     if verbose:
         print(f"copy {src.absolute()} to {dst_file.absolute()}")
 
-    shutil.copy(src, dst_file)
+    await aioshutil.copy(src, dst_file)
 
 
-def copy_dir(srcdir: Path, dstdir: Path, verbose):
-    for path in srcdir.iterdir():
-        if path.is_dir():
-            copy_dir(path, dstdir, verbose)
+async def copy_dir(srcdir: Path, dstdir: Path, verbose):
+    async for path in srcdir.iterdir():
+        if await path.is_dir():
+            await copy_dir(path, dstdir, verbose)
         else:
-            copy_file(path, dstdir, verbose)
+            await copy_file(path, dstdir, verbose)
 
 
-def main():
+async def main():
     parser = argparse.ArgumentParser(description="Recursive file copier.")
     parser.add_argument("srcdir", type=str, help="source dir")
     parser.add_argument(
@@ -85,10 +86,10 @@ def main():
     verbose = args.verbose
 
     try:
-        check_paths(src_path, dst_path)
-        validate_source(src_path)
-        validate_destination(dst_path)
-        copy_dir(src_path, dst_path, verbose)
+        await check_paths(src_path, dst_path)
+        await validate_source(src_path)
+        await validate_destination(dst_path)
+        await copy_dir(src_path, dst_path, verbose)
     except ValueError as ve:
         print(ve)
         sys.exit(1)
@@ -104,4 +105,4 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    asyncio.run(main())
