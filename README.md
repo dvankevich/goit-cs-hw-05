@@ -75,3 +75,11 @@ dst_dir/
 pip install requests
 pip install matplotlib
 ```
+
+run
+
+```
+python task02.py
+```
+
+![top 10 words](./words01.png)
