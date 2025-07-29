@@ -68,3 +68,10 @@ dst_dir/
 │       ├── stand
 
 ```
+
+## task02
+
+```
+pip install requests
+pip install matplotlib
+```
