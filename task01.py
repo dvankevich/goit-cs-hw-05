@@ -54,10 +54,10 @@ async def copy_file(src: Path, dst: Path, verbose):
     await aioshutil.copy(src, dst_file)
 
 
-async def copy_dir(srcdir: Path, dstdir: Path, verbose):
+async def read_folder(srcdir: Path, dstdir: Path, verbose):
     async for path in srcdir.iterdir():
         if await path.is_dir():
-            await copy_dir(path, dstdir, verbose)
+            await read_folder(path, dstdir, verbose)
         else:
             await copy_file(path, dstdir, verbose)
 
@@ -89,7 +89,7 @@ async def main():
         await check_paths(src_path, dst_path)
         await validate_source(src_path)
         await validate_destination(dst_path)
-        await copy_dir(src_path, dst_path, verbose)
+        await read_folder(src_path, dst_path, verbose)
     except ValueError as ve:
         print(ve)
         sys.exit(1)
